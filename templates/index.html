@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Names | CRUD Names App{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <p class="eyebrow">EMPLOYEE NAME MANAGER</p>
+    <h1>Manage Names</h1>
+    <p class="subtitle">Add, view, edit, and delete names using this simple CRUD app.</p>
+</section>
+
+<div class="content-grid">
+    <section class="panel form-panel">
+        {% if edit_item %}
+            <h2>Edit name</h2>
+            <p class="panel-description">Update the selected name below.</p>
+            <form action="{{ url_for('edit', name_id=edit_item.id) }}" method="POST">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" maxlength="80"
+                       value="{{ edit_item.name }}" placeholder="Enter a name" required autofocus>
+                <div class="form-actions">
+                    <button class="button primary" type="submit">Save changes</button>
+                    <a class="button secondary" href="{{ url_for('index') }}">Cancel</a>
+                </div>
+            </form>
+        {% else %}
+            <h2>Add a new name</h2>
+            <p class="panel-description">Enter a name to add it to the list.</p>
+            <form action="{{ url_for('index') }}" method="POST">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" maxlength="80"
+                       placeholder="e.g., Maria Santos" required>
+                <button class="button primary full-width" type="submit">+ Add name</button>
+            </form>
+        {% endif %}
+        <div class="tip">
+            <strong>Tip</strong>
+            <span>Names are kept in memory, so the sample list resets when you restart the app.</span>
+        </div>
+    </section>
+
+    <section class="panel list-panel">
+        <div class="list-heading">
+            <div>
+                <h2>All names</h2>
+                <p class="panel-description">Names currently stored in the app.</p>
+            </div>
+            <span class="count-badge">{{ names|length }} total</span>
+        </div>
+
+        {% if names %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="number-column">#</th>
+                            <th>Name</th>
+                            <th class="actions-column">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for person in names %}
+                            <tr>
+                                <td class="number-column">{{ loop.index }}</td>
+                                <td class="person-name">{{ person.name }}</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a class="button small edit-button"
+                                           href="{{ url_for('edit', name_id=person.id) }}">Edit</a>
+                                        <form action="{{ url_for('delete', name_id=person.id) }}"
+                                              method="POST"
+                                              onsubmit="return confirm('Delete {{ person.name|e }}?');">
+                                            <button class="button small delete-button" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">◎</div>
+                <h3>No names yet</h3>
+                <p>Add a name using the form to get started.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
